@@ -1,0 +1,297 @@
+<odoo>
+	<!-- Order form view -->
+	<record id="view_order_form" model="ir.ui.view">
+		<field name="name">order.order.form</field>
+		<field name="model">order.order</field>
+		<field name="arch" type="xml">
+			<form string="Order" duplicate="0">
+				<header>
+					<button name="%(action_technician_wizard)d"
+							type="action" class="btn btn-primary" string="Assign"
+							attrs="{'invisible' : [('state', '!=', 'order_created')]}">
+					</button>
+					<button name="%(action_technician_wizard)d"
+							type="action" class="btn btn-primary" string="Re-Assign"
+							attrs="{'invisible' : [('state', 'not in', ['assign', 'reject'])]}"
+							groups="custom_asset_management.group_central_finance">
+					</button>
+					<button name="action_start" type="object"
+							class="btn btn-primary" string="Start"
+							attrs="{'invisible' : [('state', '!=', 'assign')]}" 
+							groups="custom_asset_management.group_local_finance">
+					</button>
+					<button name="action_validate" type="object"
+							class="btn btn-primary" string="Complete"
+							attrs="{'invisible' : [('state', '!=', 'inprogress')]}"
+							groups="custom_asset_management.group_local_finance">
+					</button>
+					<button name="action_order_approve" type="object"
+							class="btn btn-primary" string="Approve"
+							attrs="{'invisible' : ['|',('state', '!=', 'validate'),('reject', '=', True)]}"
+							groups="custom_asset_management.group_central_finance">
+					</button>
+					<button name="action_order_close" type="object"
+							class="btn btn-primary" string="Close"
+							attrs="{'invisible' : [('state', '!=', 'apporve')]}"
+							groups="custom_asset_management.group_central_finance"
+							confirm="Are you sure you want to close this Order?">
+					</button>
+					<button name="action_order_reject" type="object"
+							class="btn btn-primary" string="Reject"
+							attrs="{'invisible' : [('state', '!=', 'validate')]}"
+							groups="custom_asset_management.group_central_finance">
+					</button>
+<!--					<button name="action_order_restart"-->
+<!--							type="object" class="btn btn-primary" string="Re-Start"-->
+<!--							attrs="{'invisible' : [('state', '=', 'assign'), ('reject_order', '=', True)]}"/>-->
+					<field name="state" widget="statusbar" statusbar_visible="order_created,assign,inprogress,validate"/>
+				</header>
+				<sheet>
+					<group col="3">
+						<group>
+							<field name="name" force_save="1"/>
+							<field name="order_datetime" readonly="1"/>
+							<field name="order_description" attrs="{'readonly': [('state', '=', 'close')]}"/>
+						</group>
+						<group>
+							<field name="plant_id" force_save="1" options="{'no_open': True}"
+								   attrs="{'readonly': [('state', '!=', 'order_created')], 'required': [('state', '=', 'order_created')]}"/>
+							<field name="work_center_ids" widget="many2many_tags" force_save="1"
+								   options="{'no_open': True}" attrs="{'readonly': [('state', '!=', 'order_created')]}"/>
+							<field name="reject" invisible="1"/>
+							<field name="technician_datetime" readonly="1"
+									 attrs="{'invisible': [('state', 'not in', ['validate','apporve','close'])]}"/>
+							<field name="approval_datetime" readonly="1"
+								   attrs="{'invisible': [('state', 'not in', ['apporve','close'])]}"/>
+						</group>
+						<group>
+							<field name="create_uid" readonly="1" options="{'no_open': True}"/>
+							<field name="technician_id" readonly="1" options="{'no_open': True}"/>
+							<field name="approval_id" attrs="{'readonly': [('state', 'not in', ['order_created', 'assign'])]}" options="{'no_open': True}"/>
+							<field name="is_hide_reject" invisible="1"/>
+							<field name="closed_user_id" invisible="1"/>
+							<field name="closed_datetime" invisible="1"/>
+							<field name="assigned_datetime" invisible="1"/>
+						</group>
+					</group>
+					<group>
+						<field name="reason" attrs="{'invisible' : [('state', '!=', 'reject')]}"/>
+					</group>
+					<notebook>
+						<page string="Asset List">
+							<field name="asset_ids" nolabel="1" widget="section_and_note_one2many" mode="tree"
+									 attrs="{'readonly': [('state', '=', 'close')]}">
+								<tree editable="bottom" delete="0">
+									<field name="approved" force_save="1"
+										   groups="custom_asset_management.group_central_finance"
+										   attrs="{'column_invisible': [('parent.state', 'not in', ['validate','apporve','reject'])], 'readonly': ['|', ('rejected', '=', True), ('state', '=', 'apporve')]}"/>
+									<field name="rejected" force_save="1"
+										   groups="custom_asset_management.group_central_finance"
+										   attrs="{'column_invisible': [('parent.state', 'not in', ['validate','apporve','reject'])], 'readonly': [('approved', '=', True)]}"/>
+									<field name="asset_code_id" force_save="1" options="{'no_open': True}"
+										   attrs="{'readonly': [('parent.state', '!=', 'order_created')]}"
+										   domain="[('asset_order_created','!=',True)]"/>
+									<field name="inventory_no" force_save="1" readonly="1"/>
+									<field name="asset_code_new" force_save="1" readonly="1"/>
+									<field name="work_center_id" force_save="1" readonly="1" options="{'no_open': True}"/>
+									<field name="functional_location_id" force_save="1" readonly="1" options="{'no_open': True}"/>
+									<field name="inventory_count" force_save="1" readonly="1"/>
+									<field name="physical_count" attrs="{'readonly': [('able_to_modify_fields','=',False)]}"/>
+									<field name="physical_verification_date" force_save="1" readonly="1"/>
+									<field name="rfid_tag" force_save="1"
+											 attrs="{'column_readonly': [('parent.state', 'not in', ['inprogress','validate'])]}"/>
+									<field name="remark" force_save="1" attrs="{'column_readonly': [('parent.state', 'not in', ['inprogress','validate'])]}"/>
+									<field name="able_to_modify_fields" invisible="1"/>
+									<field name="state" invisible="1"/>
+									<button name="unlink"
+											type="object"
+											class="btn-secondary"
+											attrs="{'invisible': [('parent.state', '!=', 'order_created')]}"
+											icon="fa-trash-o"/>
+								</tree>
+							</field>
+						</page>
+					</notebook>
+				</sheet>
+				<div class="oe_chatter">
+					<field name="message_follower_ids" groups="base.group_user"/>
+					<field name="message_ids"/>
+				</div>
+			</form>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_order_graph_view">
+		<field name="name">order.order.graph</field>
+		<field name="model">order.order</field>
+		<field name="type">graph</field>
+		<field name="arch" type="xml">
+			<graph string="Order" type="bar">
+				<field name="name"/>
+				<field name="plant_id"/>
+				<field name="order_datetime" operator="*"/>
+				<field name="state"/>
+			</graph>
+		</field>
+	</record>
+
+	<record id="view_order_filter" model="ir.ui.view">
+        <field name="name">order.order.list.select</field>
+        <field name="model">order.order</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Order">
+                <field name="name" string="Order"/>
+                <field name="technician_id"/>
+				<field name="plant_id"/>
+				<field name="work_center_ids"/>
+				<field name="asset_ids" mode="kanban"/>
+				<filter string="User" name="technician_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="User" name="technician_id" domain="[]" context="{'group_by': 'technician_id'}"/>
+					<filter string="Plant" name="plant_id" domain="[]" context="{'group_by': 'plant_id'}"/>
+                    <filter string="Status" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+	<!-- Order Local Finance tree view -->
+	<record id="view_order_tree" model="ir.ui.view">
+		<field name="name">order.order.tree</field>
+		<field name="model">order.order</field>
+		<field name="arch" type="xml">
+			<tree string="Order">
+				<field name="name" optional="show"/>
+				<field name="plant_id" optional="show"/>
+				<field name="work_center_ids" optional="show" widget="many2many_tags"/>
+				<field name="order_datetime" optional="show"/>
+				<field name="create_uid" optional="show"/>
+				<field name="technician_id" optional="show"/>
+				<field name="approval_id" optional="show"/>
+				<field name="state" optional="show"/>
+				<field name="reason" optional="hide"/>
+			</tree>
+		</field>
+	</record>
+
+	<!-- Order Local Finance action -->
+	<record model="ir.actions.act_window" id="action_view_ordersby_status">
+		<field name="name">Orders</field>
+		<field name="res_model">order.order</field>
+		<field name="view_mode">tree,form,graph</field>
+		<field name="view_id" ref="view_order_tree"/>
+		<field name="context">
+            {
+                'search_default_group_by_state': 1
+            }
+        </field>
+<!--		<field name="domain">[('state' ,'in', ['assign', 'inprogress', 'reject'])]</field>-->
+	</record>
+
+  	<!-- Order Approval tree view Central Finance -->
+	<record id="view_order_approval_tree_central_finance" model="ir.ui.view">
+		<field name="name">order.order.tree</field>
+		<field name="model">order.order</field>
+		<field name="arch" type="xml">
+			<tree string="Order">
+				<field name="name" optional="show"/>
+				<field name="plant_id" optional="show"/>
+				<field name="work_center_ids" optional="show" widget="many2many_tags"/>
+				<field name="order_datetime" optional="show"/>
+				<field name="create_uid" optional="show"/>
+				<field name="technician_id" optional="show"/>
+				<field name="approval_id" optional="show"/>
+				<field name="state" optional="show"/>
+				<field name="reason" optional="hide"/>
+			</tree>
+		</field>
+	</record>
+
+	<!-- Order approval action Central Finance -->
+	<record model="ir.actions.act_window" id="action_view_order_approval_central_finance">
+		<field name="name">Order for Approval</field>
+		<field name="res_model">order.order</field>
+		<field name="view_mode">tree,form,graph</field>
+		<field name="view_id" ref="view_order_approval_tree_central_finance"/>
+		<field name="domain">[('state', '=', 'validate')]</field>
+	</record>
+
+	<!-- Order Assigned action Local Finance -->
+	<record model="ir.actions.act_window" id="action_view_order_assigned_local_finance">
+		<field name="name">Orders Assigned</field>
+		<field name="res_model">order.order</field>
+		<field name="view_mode">tree,form,graph</field>
+		<field name="view_id" ref="view_order_tree"/>
+		<field name="domain">[('state', 'in', ['assign','reject'])]</field>
+	</record>
+
+	<!-- Order tree view Central Finance -->
+	<record id="view_order_tree_central_finance" model="ir.ui.view">
+		<field name="name">order.order.tree</field>
+		<field name="model">order.order</field>
+		<field name="arch" type="xml">
+			<tree string="Order">
+				<field name="name" optional="show"/>
+				<field name="plant_id" optional="show"/>
+				<field name="work_center_ids" optional="show" widget="many2many_tags"/>
+				<field name="order_datetime" optional="show"/>
+				<field name="create_uid" optional="show"/>
+				<field name="technician_id" optional="show"/>
+				<field name="approval_id" optional="show"/>
+				<field name="state" optional="show"/>
+				<field name="reason" optional="hide"/>
+			</tree>
+		</field>
+	</record>
+
+	<!-- Order action Central Finance -->
+	<record model="ir.actions.act_window" id="action_view_order_central_finance">
+		<field name="name">Orders</field>
+		<field name="res_model">order.order</field>
+		<field name="view_mode">tree,form,graph</field>
+		<field name="view_id" ref="view_order_tree_central_finance"/>
+		<field name="domain">[('state', 'in', ['order_created', 'validate'])]</field>
+	</record>
+
+	<!-- Order menuitem Central Finance -->
+	<menuitem id="menu_view_orders" name="Pallet Orders"
+			  parent="custom_asset_management.menu_action_account_asset_asset_main"
+			  sequence="2"
+			  groups="custom_asset_management.group_central_finance,custom_asset_management.group_local_finance"/>
+
+	<!-- Order by status menuitem -->
+	<menuitem id="menu_view_orderby_status" name="Order by Status"
+			  parent="custom_asset_management.menu_view_orders"
+			  action="action_view_ordersby_status"
+			  groups="custom_asset_management.group_central_finance,custom_asset_management.group_local_finance"
+			  sequence="1"/>
+
+	<!-- Order approval menuitem Central Finance -->
+	<menuitem id="menu_view_order_approval_central_finance" name="Orders for Approval"
+			  parent="custom_asset_management.menu_view_orders"
+			  action="action_view_order_approval_central_finance"
+			  sequence="2"
+			  groups="custom_asset_management.group_central_finance"/>
+
+	<!-- Order Assigned menuitem Local Finance -->
+	<menuitem id="menu_view_order_assigned_local_finance" name="Orders Assigned"
+			  parent="custom_asset_management.menu_view_orders"
+			  action="action_view_order_assigned_local_finance"
+			  sequence="1"
+			  groups="custom_asset_management.group_local_finance"/>
+
+	<!-- Dashboard -->
+	<record id="client_action_asset_dashboard" model="ir.actions.client">
+		<field name="name">Dashboard</field>
+		<field name="tag">asset_dashboard</field>
+	</record>
+
+	<menuitem id="main_menu_asset_dashboard"
+		name="Dashboard"
+		parent="menu_action_account_asset_asset_main"
+		action="custom_asset_management.client_action_asset_dashboard"
+		groups="custom_asset_management.group_central_finance,custom_asset_management.group_local_finance"
+		sequence="0"/>
+
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lpn_master,lpn.master,model_lpn_master,,1,1,1,1
+access_lpn_child,lpn.child,model_lpn_child,,1,1,1,1
+access_lpn_cycle_count,lpn.cycle.count,model_lpn_cycle_count,,1,1,1,1

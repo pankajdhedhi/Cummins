@@ -1,0 +1,48 @@
+<odoo>
+    <!-- Functional Location form view -->
+    <record id="view_functional_location_form" model="ir.ui.view">
+        <field name="name">asset.functional.location.form</field>
+        <field name="model">asset.functional.location</field>
+        <field name="arch" type="xml">
+            <form string="Functional Location" duplicate="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="fl_code"/>
+                        </group>
+                        <group>
+                            <field name="fl_detail"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Functional Location tree view -->
+    <record id="view_functional_location_tree" model="ir.ui.view">
+        <field name="name">asset.functional.location.tree</field>
+        <field name="model">asset.functional.location</field>
+        <field name="arch" type="xml">
+            <tree string="Functional Location">
+                <field name="name"/>
+                <field name="fl_code"/>
+                <field name="fl_detail"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Functional Location action -->
+    <record model="ir.actions.act_window" id="action_view_functional_location">
+        <field name="name">Functional Location</field>
+        <field name="res_model">asset.functional.location</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_functional_location_tree"/>
+    </record>
+
+    <!-- Functional Location menuitem -->
+    <menuitem id="menu_view_functional_location" name="Functional Location"
+              parent="custom_asset_management.menu_action_account_asset_asset_configs"
+              action="action_view_functional_location" groups="base.group_erp_manager"/>
+</odoo>

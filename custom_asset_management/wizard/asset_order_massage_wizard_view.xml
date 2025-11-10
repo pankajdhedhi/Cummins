@@ -1,0 +1,32 @@
+<odoo>
+    <record id="asset_order_wizard_form" model="ir.ui.view">
+        <field name="name">asset.order.message.wizard.form</field>
+        <field name="model">asset.order.message.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <span>
+                    <h3><field name="message"/></h3>
+                    <field name="order_id" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </span>
+                <footer>
+                    <button name="action_ok" string="OK" type="object"
+                            default_focus="1" class="oe_highlight" attrs="{'invisible' : [('state', 'in', ['validate','reject'])]}"/>
+                    <button name="action_ok" string="Yes" type="object"
+                            default_focus="1" class="oe_highlight" attrs="{'invisible' : [('state', '!=', 'validate')]}"/>
+                    <button name="action_reject" string="Ok" type="object"
+                            default_focus="1" class="oe_highlight" attrs="{'invisible' : [('state', '!=', 'reject')]}"/>
+                    <button string="Cancel" class="btn-secondary"
+                            attrs="{'invisible' : [('state', '!=', 'validate')]}"
+                            special="cancel" data-hotkey="z"/>
+                </footer>
+                <script>
+                    $(document).ready(function(){
+                    $('.modal-dialog').css({'width': '50%'});
+                    });
+                </script>
+            </form>
+        </field>
+    </record>
+
+</odoo>

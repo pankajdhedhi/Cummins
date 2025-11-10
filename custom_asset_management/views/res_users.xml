@@ -1,0 +1,50 @@
+<odoo>
+    <!-- add plant field in Users -->
+    <record id="view_user_form_inheirt_plant" model="ir.ui.view">
+        <field name="name">res.users.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
+                <field name="plant_id" widget="many2many_tags"/>
+                <field name="force_reset_password"/>
+            </xpath>
+            <xpath expr="//div/label[@for='login']" position="replace">
+                <label for="login" string="Email/Login ID"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_tree_inherit" model="ir.ui.view">
+        <field name="name">res.users.tree</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login_date']" position="replace">
+                <field name="login_date" string="Last Login"/>
+            </xpath>
+            <xpath expr="//field[@name='login_date']" position="after">
+                <field name="active"/>
+            </xpath>
+            <xpath expr="//field[@name='lang']" position="replace">
+                <field name="lang" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='login']" position="replace">
+                <field name="login" string="Email/Login ID"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_remove_state_tree" model="ir.ui.view">
+        <field name="name">res.users.tree.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="auth_signup.view_users_state_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="badge" invisible="1"
+                    decoration-info="state == 'new'" decoration-success="state == 'active'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

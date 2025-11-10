@@ -1,0 +1,87 @@
+
+/* Float four count-boxs side by side */
+.count-box {
+  float: left;
+  width: 25%;
+  padding: 0 10px;
+}
+
+.count-box2 {
+  float: left;
+  width: 20%;
+  padding: 0 10px;
+}
+
+
+/* Responsive count-boxs */
+@media screen and (max-width: 600px) {
+  .count-box {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+/* Style the counter cards */
+.dash-list {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #ededed;
+  height: auto;
+}
+.dash-box {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding-bottom: 48px;
+  text-align: left;
+  background-color: #ededed;
+}
+.list-click {
+  text-align: left;
+  color: blue;
+}
+
+.dash-box2 {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #8a7ffa;
+  color: #f7f552;
+  border: 3px solid black;
+  border-style: double;
+}
+
+.scrollbar
+{
+  /*margin-left: 30px;*/
+  /*float: left;*/
+  /*height: 300px;*/
+  /*width: 65px;*/
+  overflow-y: scroll;
+  /*margin-bottom: 25px;*/
+  background-color: #ededed;
+
+}
+
+#scrollbar::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+    background-color: #ededed;
+
+}
+
+#scrollbar::-webkit-scrollbar
+{
+  width: 6px;
+    background-color: #ededed;
+
+}
+
+#scrollbar::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+    background-color: #ededed;
+
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+}

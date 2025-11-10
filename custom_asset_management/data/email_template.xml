@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+
+        <record id="to_send_mail_assign_order" model="mail.template">
+            <field name="name">Assign Order Mail Template</field>
+            <field name="model_id" ref="custom_asset_management.model_order_order"/>
+            <field name="subject">Order: ID# {{ object.name}}</field>
+            <field name="email_from"/>
+            <field name="email_to"/>
+            <field name="use_default_to" eval="False"/>
+            <field name="auto_delete" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Dear User,</b> <br/>
+                        A new order has been assigned to you for execution.
+                    </p><br/>
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Order ID:</b> <t t-out="object.name"/> <br/>
+                        <b>Order Date/Time:</b> <t t-out="object.order_datetime"/><br/>
+                        <b>Plant:</b> <t t-out="object.plant_id.name"/><br/>
+                        <b>Created By:</b> <t t-out="object.create_uid.name"/><br/><br/>
+                    </p>
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        The order is available in the system for your action.<br/><br/>
+                        <b>Regards,</b><br/>
+                        System Admin<br/><br/>
+                        <b>Note:</b> This is a system generated message, please do not reply.
+                        
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <record id="to_send_mail_approve_order" model="mail.template">
+            <field name="name">Approve Order Mail Template</field>
+            <field name="model_id" ref="custom_asset_management.model_order_order"/>
+            <field name="email_from"/>
+            <field name="email_to"/>
+            <field name="subject">Completed Order: ID# {{ object.name}}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Dear User,</b> <br/>
+                        The order has been completed and updated for your information / action.
+                    </p><br/>
+
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Order ID:</b> <t t-out="object.name"/><br/>
+                        <b>Order Date/Time:</b> <t t-out="object.order_datetime"/><br/>
+                        <b>Plant:</b> <t t-out="object.plant_id.name"/><br/>
+                        <b>Created By:</b> <t t-out="object.create_uid.name"/><br/>
+                        <b>Executed By:</b> <t t-out="object.technician_id.name"/><br/><br/>
+                    </p>
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        The order is available in the system for your approval.<br/><br/>
+                        <b>Regards,</b><br/>
+                        System Admin<br/><br/>
+                        <b>Note:</b> This is a system generated message, please do not reply.
+                    </p>
+                </div>
+            </field>
+        </record>
+        
+        <record id="to_send_mail_rejected_order" model="mail.template">
+            <field name="name">Rejected Order Mail Template</field>
+            <field name="model_id" ref="custom_asset_management.model_order_order"/>
+            <field name="email_from"/>
+            <field name="email_to"/>
+            <field name="subject">Rejected Order: ID# {{ object.name}}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Dear User,</b> <br/>
+                        The order has been rejected and assigned for re-execution.
+                    </p><br/>
+
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Order ID:</b> <t t-out="object.name"/><br/>
+                        <b>Order Date/Time:</b> <t t-out="object.order_datetime"/><br/>
+                        <b>Plant:</b> <t t-out="object.plant_id.name"/><br/>
+                        <b>Created By:</b> <t t-out="object.create_uid.name"/><br/>
+                        <b>Executed By:</b> <t t-out="object.technician_id.name"/><br/>
+                        <b>Reject Reason:</b> <t t-out="object.reason"/><br/><br/>
+                    </p>
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        The order is available in the system for your action.<br/><br/>
+                        <b>Regards,</b><br/>
+                        System Admin<br/><br/>
+                        <b>Note:</b> This is a system generated message, please do not reply.
+                    </p>
+                </div>
+            </field>
+        </record>
+        
+        <record id="to_send_mail_approved_order" model="mail.template">
+            <field name="name">Approved Order Mail Template</field>
+            <field name="model_id" ref="custom_asset_management.model_order_order"/>
+            <field name="email_from"/>
+            <field name="email_to"/>
+            <field name="subject">Approved Order: ID# {{ object.name}}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Dear User,</b> <br/><br/>
+                        The order has been approved.
+                    </p><br/>
+
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        <b>Order ID :</b> <t t-out="object.name"/><br/>
+                        <b>Order Date/Time :</b> <t t-out="object.order_datetime"/><br/>
+                        <b>Plant    :</b> <t t-out="object.plant_id.name"/><br/>
+                        <b>Created By  :</b> <t t-out="object.create_uid.name"/><br/>
+                        <b>Executed By :</b> <t t-out="object.technician_id.name"/><br/><br/>
+                    </p>
+                    <p style="margin: 0px; padding: 0px; font-size: 15px;">
+                        The order is available in the system for reference.<br/><br/>
+                        <b>Regards,</b><br/>
+                        System Admin<br/><br/>
+                        <b>Note:</b> This is a system generated message, please do not reply.
+                    </p>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

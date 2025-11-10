@@ -1,0 +1,208 @@
+<odoo>
+	<!-- Asset Management form view -->
+	<record id="view_asset_management_form" model="ir.ui.view">
+		<field name="name">asset.management.form</field>
+		<field name="model">asset.management</field>
+		<field name="arch" type="xml">
+			<form string="Asset Master" duplicate="0">
+				<sheet>
+					<div class="oe_title">
+						<label for="name" class="oe_edit_only"/>
+						<h1>
+							<field name="name" placeholder="e.g. Laptop iBook" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</h1>
+					</div>
+					<group string="Asset Information">
+						<group>
+							<field name="is_local_finance_user" invisible="1"/>
+							<field name="asset_code" invisible="1"/>
+							<field name="asset_code_new" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="asset_category_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="inventory_no" invisible="1"
+									 attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="barcode"/>
+							<field name="sr_no" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="asset_order_created" invisible="1"/>
+							<field name="rfid_code" invisible="1"/>
+						</group>
+						<group>
+							<field name="work_center_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="asset_allocation_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="asset_description" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="description_1" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="description_2" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+					</group>
+					<group string="Location Information">
+						<group>
+							<field name="plant_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="plant_name" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+						<group>
+							<field name="functional_location_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="actual_location" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+					</group>
+					<group string="Financial Information">
+						<group>
+							<field name="cost_center_descript" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="profit_center" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="profit_center_descript" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+						<group>
+							<field name="po_no" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="vendor_id" options="{'no_open': True}" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="gross_block" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="cap_date" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+					</group>
+					<group string="Inventory Information">
+						<group>
+							<field name="inventory_count" force_save="1" readonly="1"/>
+							<field name="physical_count" force_save="1" readonly="1"/>
+						</group>
+						<group>
+							<field name="physical_verification_date" force_save="1" readonly="1"/>
+							<field name="assignment_no" force_save="1" readonly="1"/>
+						</group>
+					</group>
+					<group invisible="1">
+						<group>
+							<field name="asset_category_name" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="functional_location_name" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+							<field name="work_center_name" attrs="{'readonly': [('is_local_finance_user','=',True)]}"/>
+						</group>
+					</group>
+				</sheet>
+				<div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" options="{'no_open': True}"/>
+                    <field name="message_ids" options="{'no_open': True}"/>
+                </div>
+			</form>
+		</field>
+	</record>
+
+	<!-- Asset Management tree view -->
+	<record id="view_asset_management_tree" model="ir.ui.view">
+		<field name="name">asset.management.tree</field>
+		<field name="model">asset.management</field>
+		<field name="arch" type="xml">
+			<tree string="Asset Master" decoration-success="asset_order_created == True">
+				<field name="name" optional="show"/>
+				<field name="asset_code_new" optional="hide"/>
+				<field name="asset_category_id" optional="show" options="{'no_open': True}"/>
+				<field name="inventory_no" optional="hide"/>
+				<field name="barcode" optional="hide"/>
+				<field name="sr_no" optional="hide"/>
+				<field name="asset_allocation_id" optional="hide" options="{'no_open': True}"/>
+				<field name="asset_description" optional="hide"/>
+				<field name="description_1" optional="hide"/>
+				<field name="description_2" optional="hide"/>
+				<field name="po_no" optional="hide"/>
+				<field name="plant_id" optional="show"/>
+				<field name="plant_name" optional="show"/>
+				<field name="functional_location_id" string="Func. Loc." optional="show"/>
+				<field name="actual_location" optional="show"/>
+				<field name="vendor_id" optional="hide"/>
+				<field name="work_center_id" optional="show"/>
+				<field name="cost_center_descript" optional="hide"/>
+				<field name="inventory_count" string="Inv. Count" optional="show"/>
+				<field name="physical_count" string="Phy. Count" optional="show"/>
+				<field name="physical_verification_date" string="Phy. Ver. Date" optional="show"/>
+				<field name="profit_center" optional="hide"/>
+				<field name="profit_center_descript" optional="hide"/>
+				<field name="gross_block" optional="hide"/>
+				<field name="cap_date" optional="hide"/>
+				<field name="geo_location" optional="hide"/>
+				<field name="assignment_no" optional="hide"/>
+				<field name="asset_order_created" invisible="1"/>
+			</tree>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_asset_management_graph_view">
+		<field name="name">asset.management.graph</field>
+		<field name="model">asset.management</field>
+		<field name="type">graph</field>
+		<field name="arch" type="xml">
+			<graph string="Order" type="bar">
+				<field name="name"/>
+				<field name="work_center_id" operator="*"/>
+				<field name="actual_location"/>
+				<field name="physical_count" force_save="1"/>
+			</graph>
+		</field>
+	</record>
+
+	<record id="view_asset_management_filter" model="ir.ui.view">
+        <field name="name">asset.management.list.select</field>
+        <field name="model">asset.management</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Asset Master">
+				<field name="name"/>
+				<field name="asset_code_new"/>
+				<field name="plant_id"/>
+				<field name="work_center_id"/>
+				<field name="actual_location" string="Actual Location"/>
+				<field name="functional_location_id" string="Functional Location"/>
+				<field string="Asset Category" name="asset_category_id"/>
+				<filter string="Plant" name="plant_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Plant" name="plant_id" domain="[]" context="{'group_by': 'plant_id'}"/>
+                    <filter name="work_center_id" string="Work Center" domain="[]" context="{'group_by': 'work_center_id'}"/>
+                    <filter string="Asset Category" name="asset_category_id" domain="[]" context="{'group_by': 'asset_category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+	<!-- Asset Management Action -->
+	<record model="ir.actions.act_window" id="action_view_asset_management">
+		<field name="name">Asset Master</field>
+		<field name="res_model">asset.management</field>
+		<field name="view_mode">tree,form,graph</field>
+		<field name="view_id" ref="view_asset_management_tree"/>
+	</record>
+
+	<!-- Asset management main menuitem -->
+	<menuitem id="menu_action_account_asset_asset_main" name="Cummins - Asset Management"
+			  groups="base.group_erp_manager,custom_asset_management.group_central_finance,custom_asset_management.group_local_finance"
+			  sequence="1"
+			  web_icon="custom_asset_management,static/description/inventory.jpeg"/>
+
+	<!-- Asset management sub menuitem -->
+	<menuitem name="CTP - Supermarket Inventory"
+			  id="menu_action_account_asset_form"
+			  parent="menu_action_account_asset_asset_main"
+			  action="action_view_asset_management"
+			  sequence="1"/>
+
+	<!-- create order button in action dropdown -->
+	<act_window 
+		name="Create Order"
+		id="action_create_order"
+		res_model="asset.order.create"
+		binding_model="asset.management"
+		binding_views="list"
+		view_mode="form"
+		target="new"
+		groups="base.group_erp_manager,custom_asset_management.group_central_finance"/>
+
+	<!-- create order confirmation wizard -->
+	<record id="asset_order_create_wizard" model="ir.ui.view">
+		<field name="name">Create Order</field>
+		<field name="model">asset.order.create</field>
+		<field name="arch" type="xml">
+			<form string="Create Order">
+				<p>
+					Are you sure you want to create order?
+				</p>
+				<footer>
+					<button name="action_button_create_order" string="Confirm" type="object" class="btn btn-primary"/>
+					<button string="Cancel" class="btn" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+</odoo>

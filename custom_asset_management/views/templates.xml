@@ -1,0 +1,102 @@
+<odoo>
+    <template id="reset_password_template" name="Force Password Reset">
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const togglePassword = document.getElementById("togglePassword");
+                const passwordField = document.getElementById("new_password");
+        
+                togglePassword.addEventListener("click", function () {
+                    const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+                    passwordField.setAttribute("type", type);
+                    this.classList.toggle("fa-eye");
+                    this.classList.toggle("fa-eye-slash");
+                });
+            });
+        </script>
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+        <t t-call="web.layout">
+            <t t-set="title">Reset Your Password</t>
+
+            <!-- Fullscreen Background with Clear Image and No Padding -->
+            <div style="
+                min-height: 100vh;
+                display: flex;
+                margin: 0;
+                justify-content: center;
+                align-items: center;
+                background-image: url('/custom_asset_management/static/description/img/cummins_dashboard.jpg');
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: cover;">
+
+                <!-- Card -->
+                <div style="
+                    background: #fff;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    padding: 30px 30px 35px;
+                    width: 80%;
+                    max-width: 280px;
+                    text-align: center;">
+
+                    <!-- Logo -->
+                    <div class="mb-3">
+                        <img src="/web/image/res.company/1/logo" alt="Zydus Logo" style="max-height: 80px;" />
+                    </div>
+
+                    <!-- Heading -->
+                    <h4 style="font-weight: 600; color: #333;">Reset Your Password</h4>
+                    <hr/>
+
+                    <!-- FORM -->
+                    <form method="post" action="/web/reset_password/submit" style="text-align: left;">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <!-- Password Field with Eye Icon (Styled inline) -->
+                        <div class="form-group mb-3" style="text-align: center;">
+                            <label for="new_password" class="mb-2 fw-bold" style="display: block; text-align: center;margin-bottom: 10px;">
+                                New Password
+                            </label>
+                            <div style="display: flex; justify-content: center; align-items: center;">
+                                <input type="password" id="new_password" name="new_password" class="form-control form-control-lg" placeholder="Enter your new password" style="width: 250px;" />
+                                <i id="togglePassword" class="fa fa-eye" style="margin-left: -35px; cursor: pointer; color: #6c757d;"/>
+                            </div>
+                        </div>
+
+
+                        <!-- Button -->
+                        <div style="margin-top: 25px; text-align: center;">
+                            <button type="submit" class="btn btn-primary" style="
+                                background-color: #269999;
+                                border-color: #269999;
+                                color: white;
+                                font-weight: 500;
+                                font-size: 15px;
+                                padding: 10px 25px;
+                                border-radius: 6px;
+                                width: 70%;
+                                max-width: 250px;">
+                                🔒 Update Password
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Password Policy -->
+                    <div class="mt-4" style="font-size: 15px; color: #666; display: flex; justify-content: center;">
+                        <div>
+                            <strong style="display: block; text-align: center;">Password must include:</strong>
+                            <ul class="mt-2" style="padding-left: 20px; line-height: 1.6; text-align: left;">
+                                <li>At least 8 characters</li>
+                                <li>1 uppercase &amp; 1 lowercase letter</li>
+                                <li>1 number &amp; 1 special character</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

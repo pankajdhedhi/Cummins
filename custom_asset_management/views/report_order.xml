@@ -1,0 +1,220 @@
+<odoo>
+   
+   <template id="asset_order_verification_template">
+     <t t-call="web.html_container">
+        <div class="header">
+            <div class="row mt32 mb32" border="1">
+               <div style="font-size: 15px;" class="col-3 text-right"/>
+               <div style="font-size: 25px;" class="col-6 text-center">
+                  <br/>
+                  <b>Zydus Lifesciences Limited</b>
+               </div>
+               <div class="col-3" style="padding-top:10px; text-align: right;">
+                  <img t-if="docs.company_id.logo" t-att-src="image_data_uri(docs.company_id.logo)" style="max-height: 55px;" alt="Logo"/>
+               </div>
+            </div>
+           
+           <div class="row mt32 mb3">
+              <div class="col-3"/>
+              <div class="col-6" style="font-size: 20px;margin-top: 5px; text-align: center">
+                 <strong>Asset Physical Verification Report</strong>
+              </div>
+              <div class="col-3"/>
+           </div>
+           <div class="mt-0 mt-0" style="border: 2px solid black;border-color: #D3D3D3;"/>
+        </div>
+        
+         <!-- Order Details -->
+        <t t-call="web.external_layout">
+            <div class="page">
+               <table class="table table-sm">
+                  <tr>
+                     <td style="border: 0px !important; border-style: solid !important; border-color: #fff !important;">
+                         <span><strong>Order ID#:</strong> <t t-esc="docs.name"/></span>
+                     </td>
+                     <td style="border: 0px !important; border-style: solid !important; border-color: #fff !important;">
+                        <span style="float:center;"><strong>Order Status: </strong>
+                           <t t-if="docs.state == 'order_created'">Order Created</t>
+                           <t t-if="docs.state == 'assign'">Assigned</t>
+                           <t t-if="docs.state == 'inprogress'">In-Progress</t>
+                           <t t-if="docs.state == 'validate'">Completed</t>
+                           <t t-if="docs.state == 'apporve'">Approved</t>
+                           <t t-if="docs.state == 'close'">Closed</t>
+                           <t t-if="docs.state == 'reject'">Rejected</t>
+                        </span>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td style="border: 0px !important; border-style: solid !important; border-color: #fff !important;">
+                        <span><strong>Plant Code:</strong> <t t-esc="docs.plant_id.name"/></span>
+                     </td>
+                     <td style="border: 0px !important; border-style: solid !important; border-color: #fff !important;">
+                        <span style="float:center;"><strong>Plant Name:</strong> <t t-esc="docs.plant_id.plant_name"/></span>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td style="border: 0px !important; border-style: solid !important; border-color: #fff !important;">
+                        <strong>Order Date/Time:</strong>
+                        <t t-if="docs.order_datetime">
+                           <span t-esc="context_timestamp(docs.order_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                        </t>
+                     </td>
+                  </tr>
+               </table>
+               <br/><br/>
+               
+               <t t-set="i" t-value="1" />
+               <table class="table table-sm mt16" style="width:100%; font-size: 15px;" border="1">
+                 <thead>
+                   <tr>
+                     <th>S. No.</th>
+                     <th>Asset Name</th>
+                     <th>Inventory <br/>No.</th>
+                     <th>Asset <br/>Code</th>
+                     <th>Inv. Count</th>
+                     <th>Phy. Count</th>
+                     <th>Phy. Ver. Date</th>
+                     <th>Remark</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <t t-foreach="docs.asset_ids" t-as="line" t-index="i">
+                     <tr>
+                       <td style="width:6%;"><span t-esc="i"/><t t-set="i" t-value="i+1"/></td>
+                       <td style="width:22%;"><t t-esc="line.asset_code_id.name"/></td>
+                       <td style="width:12%;" class="text-left"><t t-esc="line.inventory_no"/></td>
+                       <td style="width:8%;" class="text-left"><t t-esc="line.asset_code_new"/></td>
+                       <td style="width:5%;" class="text-center"><t t-esc="line.inventory_count"/></td>
+                       <td style="width:5%;" class="text-center"><t t-esc="line.physical_count"/></td>
+                       <td style="width:10%;" class="text-left">
+                          <t t-if="line.physical_verification_date">
+                           <span t-field="line.physical_verification_date" t-options='{"format": "dd/MM/YYYY"}'/>
+                          </t>
+                       </td>
+                       <td style="width:25%;" class="text-left">
+                          <t t-esc="line.remark"/>
+                       </td>
+                     </tr>
+                   </t>
+                 </tbody>
+               </table>
+   
+            <!-- Table 2: Action Log -->
+               <br/><br/>
+            <div class="mt16">
+              <table class="table table-sm mt16" style="width:100%; font-size: 15px;" border="1">
+                 <thead>
+                   <tr>
+                     <th>S. No.</th>
+                     <th>Action</th>
+                     <th>Performed By</th>
+                     <th>Date/Time</th>
+                   </tr>
+                 </thead>
+                <tbody>
+                     <tr>
+                        <td class="text-center">1</td>
+                        <td>Created By</td>
+                        <td>
+                           <span t-esc="docs.create_uid.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.order_datetime">
+                              <span t-esc="context_timestamp(docs.order_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-center">2</td>
+                        <td>Assigned To</td>
+                        <td>
+                           <span t-esc="docs.technician_id.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.assigned_datetime">
+                              <span t-esc="context_timestamp(docs.assigned_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-center">3</td>
+                        <td>Assigned By</td>
+                        <td>
+                           <span t-esc="docs.create_uid.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.assigned_datetime">
+                              <span t-esc="context_timestamp(docs.assigned_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-center">4</td>
+                        <td>Executed By</td>
+                        <td>
+                           <span t-field="docs.technician_id.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.technician_datetime">
+                              <span t-esc="context_timestamp(docs.technician_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="text-center">5</td>
+                        <td>Approved By</td>
+                        <td>
+                           <span t-field="docs.approval_id.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.approval_datetime">
+                              <span t-esc="context_timestamp(docs.approval_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                      <tr>
+                         <td class="text-center">6</td>
+                         <td>Closed By</td>
+                        <td>
+                           <span t-field="docs.closed_user_id.name"/>
+                        </td>
+                        <td class="text-center">
+                           <t t-if="docs.closed_datetime">
+                              <span t-esc="context_timestamp(docs.closed_datetime).strftime('%d/%m/%Y %H:%M')"/>
+                           </t>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+   
+            <!-- Footer -->
+            <div class="footer" style="font-size: 15px;">
+               <div class="text-center">
+                  <b>Printed By: </b> <span t-field="docs.env.user.name"/>
+                  <![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><![CDATA[&nbsp;]]><b>Printed Datetime: </b><span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+               </div>
+               <div class="text-center">
+                 <br/>
+                 Page <span class="page"/> of <span class="topage"/>
+               </div>
+            </div>
+        </div>
+        </t>
+     </t>
+   </template>
+   
+   
+   <!-- Order report action -->
+   <record id="action_report_order" model="ir.actions.report">
+      <field name="name">Order</field>
+      <field name="model">order.order</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">custom_asset_management.asset_order_verification_template</field>
+      <field name="report_file">custom_asset_management.asset_order_verification_template</field>
+      <field name="print_report_name">'Order - %s' % (object.name)</field>
+      <field name="binding_model_id" ref="model_order_order"/>
+      <field name="binding_type">report</field>
+      <field name="paperformat_id" ref="custom_asset_management.paperformat_asset_order_report"/>
+   </record>
+</odoo>

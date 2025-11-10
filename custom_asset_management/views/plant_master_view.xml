@@ -1,0 +1,55 @@
+<odoo>
+    <!-- plant form view -->
+    <record id="view_plant_form" model="ir.ui.view">
+        <field name="name">asset.plant.form</field>
+        <field name="model">asset.plant</field>
+        <field name="arch" type="xml">
+            <form string="Plant" duplicate="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" invisible="1"/>
+                            <field name="plant_code_name"/>
+                            <field name="plant_name"/>
+                        </group>
+                        <group>
+                            <field name="plant_address"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- plant tree view -->
+    <record id="view_plant_tree" model="ir.ui.view">
+        <field name="name">asset.plant.tree</field>
+        <field name="model">asset.plant</field>
+        <field name="arch" type="xml">
+            <tree string="Plant">
+                <field name="name"/>
+                <field name="plant_code_name"/>
+                <field name="plant_name"/>
+                <field name="plant_address"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- plant action -->
+    <record model="ir.actions.act_window" id="action_view_plant">
+        <field name="name">Plant</field>
+        <field name="res_model">asset.plant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_plant_tree"/>
+    </record>
+
+    <!-- Configuration -->
+    <menuitem id="menu_action_account_asset_asset_configs" name="Configuration"
+              parent="custom_asset_management.menu_action_account_asset_asset_main"
+              sequence="3" groups="base.group_erp_manager"/>
+
+    <!-- plant menu item -->
+    <menuitem id="menu_view_plant" name="Plant"
+              parent="menu_action_account_asset_asset_configs"
+              action="action_view_plant" groups="base.group_erp_manager"/>
+</odoo>

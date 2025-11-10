@@ -1,0 +1,106 @@
+<odoo>
+    <!-- Root Config Menu -->
+    <menuitem id="menu_lpn_config_root" name="LPN Configurations"
+              parent="lpn_management.menu_lpn_root"/>
+
+    <!-- =========================
+         LPN Product Category
+    ========================== -->
+    <record id="action_lpn_product_category" model="ir.actions.act_window">
+        <field name="name">LPN Product Categories</field>
+        <field name="res_model">lpn.product.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_lpn_product_category" name="Product Categories" sequence="2"
+              parent="menu_lpn_config_root" action="action_lpn_product_category"/>
+
+    <!-- Tree View -->
+    <record id="view_lpn_product_category_tree" model="ir.ui.view">
+        <field name="name">lpn.product.category.tree</field>
+        <field name="model">lpn.product.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="category_details"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_lpn_product_category_form" model="ir.ui.view">
+        <field name="name">lpn.product.category.form</field>
+        <field name="model">lpn.product.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="category_details"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" options="{'no_open': True}"/>
+                    <field name="message_ids" options="{'no_open': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- =========================
+         Plant Location
+    ========================== -->
+    <record id="action_plant_location" model="ir.actions.act_window">
+        <field name="name">Plant Locations</field>
+        <field name="res_model">plant.location</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_plant_location" name="Plant Locations" sequence="1"
+              parent="menu_lpn_config_root" action="action_plant_location"/>
+
+    <!-- Tree View -->
+    <record id="view_plant_location_tree" model="ir.ui.view">
+        <field name="name">plant.location.tree</field>
+        <field name="model">plant.location</field>
+        <field name="arch" type="xml">
+            <tree>
+               <field name="name"/>
+               <field name="plant_code"/>
+               <field name="plant_name"/>
+               <field name="plant_address"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_plant_location_form" model="ir.ui.view">
+        <field name="name">plant.location.form</field>
+        <field name="model">plant.location</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                   <div class="oe_title">
+						<label for="plant_name" class="oe_edit_only"/>
+						<h1>
+							<field name="plant_name" placeholder="e.g. Columbus Engine Plant"/>
+						</h1>
+				   </div>
+                   <group>
+                      <group>
+                           <field name="plant_code"/>
+                           <field name="name" readonly="1" force_save="1"/>
+                      </group>
+                      <group>
+                           <field name="plant_address"/>
+                      </group>
+                   </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" options="{'no_open': True}"/>
+                    <field name="message_ids" options="{'no_open': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,48 @@
+<odoo>
+    <!-- work center form view -->
+    <record id="view_work_center_form" model="ir.ui.view">
+        <field name="name">asset.work.center.form</field>
+        <field name="model">asset.work.center</field>
+        <field name="arch" type="xml">
+            <form string="Work Center" duplicate="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="work_center_code"/>
+                        </group>
+                        <group>
+                            <field name="work_center_detail"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- work center tree view -->
+    <record id="view_work_center_tree" model="ir.ui.view">
+        <field name="name">asset.work.center.tree</field>
+        <field name="model">asset.work.center</field>
+        <field name="arch" type="xml">
+            <tree string="Work Center">
+                <field name="name"/>
+                <field name="work_center_code"/>
+                <field name="work_center_detail"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- work center action -->
+    <record model="ir.actions.act_window" id="action_view_work_center">
+        <field name="name">Work Center</field>
+        <field name="res_model">asset.work.center</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_work_center_tree"/>
+    </record>
+
+    <!-- work center menuitem -->
+    <menuitem id="menu_view_work_center" name="Work Center"
+              parent="custom_asset_management.menu_action_account_asset_asset_configs"
+              action="action_view_work_center" groups="base.group_erp_manager"/>
+</odoo>

@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tinmac_api_session_tinmac,tinmac_api.session_tinmac,model_session_tinmac,,1,1,1,1

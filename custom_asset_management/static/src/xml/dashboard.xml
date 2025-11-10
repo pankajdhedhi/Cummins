@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-name="custom_asset_management.Dashboard">
+        <div class="o_dashboards" style="height: 700px;">
+			<div class="o_asset_dashboard o_website_dashboard" style="height: 100%;">
+				<div class="o_dashboard_common" style="height: 100%;">
+					<div class="container o_dashboard_stage" style="margin-top: 20px;margin-bottom: 20px;"/>
+					<div class="container o_dashboard_value" style="margin-top: 20px;margin-bottom: 20px;"/>
+				</div>
+			</div>
+		</div>
+    </t>
+    <t t-name="custom_asset_management.dashboard_view">
+        <!--<div class="row">
+            <div class="count-box" style="cursor: pointer;"/>
+            <div class="dash-box" style="background-color: #F9F9F8; text-align:center;">
+                <img src="custom_asset_management/static/description/img/Zydus_Logo.jpg" width="250" height="100"/>
+            </div>
+            <div class="count-box" style="cursor: pointer;"/><br/>
+        </div>
+        <br/><br/>-->
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;"/>
+            <div class="col-sm-3 col-xs-12">
+                <strong><span style="font-size:19px;color: white;">Plant</span></strong>
+                <select class="form-control plants" name="plants">
+                    <t t-if="!widget.dash_init">
+                        <option t-att-value="widget.sel_plant" selected="1"><t t-esc="widget.sel_plant_str" /></option>
+                    </t>
+                    <t t-else="">
+                        <option value="Select Plant" selected="1">Select Plant</option>
+                    </t>
+                    <t t-foreach="widget.plants" t-as="plant">
+                        <t t-if="widget.sel_plant_str != widget.plants[plant]">
+                            <option t-att-value="plant"><t t-esc="widget.plants[plant]"/></option>
+                        </t>
+                    </t>
+                </select>
+            </div>
+            <div class="col-sm-3 col-xs-12">
+                <strong><span style="font-size:19px;color: white;">Period</span></strong>
+                <select class="form-control period" name="period">
+                    <t t-if="!widget.dash_init">
+                        <option t-att-value="widget.sel_day" selected="1"><t t-esc="widget.sel_day_str" /></option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Select Period'">
+                        <option value="sel_per">Select Period</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 7 Days'">
+                        <option value="7_day">Last 7 Days</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 30 Days'">
+                        <option value="30_day">Last 30 Days</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 90 Days'">
+                        <option value="90_day">Last 90 Days</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 180 Days'">
+                        <option value="180_day">Last 180 Days</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 365 Days'">
+                        <option value="365_day">Last 365 Days</option>
+                    </t>
+                    <t t-if="widget.sel_day_str != 'Last 3 Years'">
+                        <option value="3_year">Last 3 Years</option>
+                    </t>
+                </select>
+            </div>
+            <div class="count-box" style="cursor: pointer;"/>
+<!--            <t t-if="widget.is_not_local_finance"/>-->
+        </div>
+        <br/>
+        <br/>
+
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;"/>
+            <div class="col-sm-12 col-xs-12">
+                <strong><span style="font-size:25px;color: white;">Orders</span></strong>
+            </div>
+        </div>
+
+        <br/>
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #83d0c9; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Total Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_total"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #ACDDDE; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Created Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_created"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #CAF1DE; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Assigned Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_assigned"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #E1F8DC; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Inprogress Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_inprocess"/></b></center></span>
+                </div>
+            </div>
+        </div><br/>
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #FEF8DD; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Completed Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_validate"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #FFE7C7; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Approved Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_apporve"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #F7D8BA; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Closed Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_closed"/></b></center></span>
+                </div>
+            </div>
+
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #ffb38a; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Rejected Order</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.order_reject"/></b></center></span>
+                </div>
+            </div>
+        </div>
+        <br/><br/>
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;"/>
+            <div class="col-sm-12 col-xs-12">
+                <strong><span style="font-size:25px;color: white;">Assets</span></strong>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #D1FFBD; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Total Assets</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.asset_total"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #E1F8DC; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Assets Verified</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.verified_asset"/></b></center></span>
+                </div>
+            </div>
+            <div class="count-box" style="cursor: pointer;">
+                <div class="dash-box" style="background-color: #FEF8DD; text-align:center;">
+                    <strong>
+                        <span style="font-size:19px;">Assets Pending for Verification</span>
+                    </strong>
+                    <br/>
+                    <span style="font-size:35px;"><center><b><span t-esc="widget.pending_asset"/></b></center></span>
+                </div>
+            </div>
+        </div>
+    </t>
+
+
+</templates>

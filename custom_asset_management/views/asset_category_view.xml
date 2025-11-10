@@ -1,0 +1,43 @@
+<odoo>
+    <!-- Asset Category form view -->
+    <record id="view_asset_category_form" model="ir.ui.view">
+        <field name="name">asset.category.form</field>
+        <field name="model">asset.category</field>
+        <field name="arch" type="xml">
+            <form string="Asset Category" duplicate="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="category_details"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Asset Category tree view -->
+    <record id="view_asset_category_tree" model="ir.ui.view">
+        <field name="name">asset.category.tree</field>
+        <field name="model">asset.category</field>
+        <field name="arch" type="xml">
+            <tree string="Asset Category">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Asset Category action -->
+    <record model="ir.actions.act_window" id="action_view_asset_category">
+        <field name="name">Asset Category</field>
+        <field name="res_model">asset.category</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_asset_category_tree"/>
+    </record>
+
+    <!-- Asset Category menuitem -->
+    <menuitem id="menu_view_asset_category" name="Asset Category"
+              parent="custom_asset_management.menu_action_account_asset_asset_configs"
+              action="action_view_asset_category"/>
+</odoo>

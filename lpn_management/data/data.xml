@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+
+		<!-- Sequences for dispatch.order
+		<record id="seq_order_order" model="ir.sequence">
+			<field name="name">dispatch Order Sequence</field>
+			<field name="code">dispatched.order.sequence</field>
+			<field name="prefix">000</field>
+			<field name="padding">1</field>
+			<field name="company_id" eval="False"/>
+		</record>-->
+		
+	</data>
+</odoo>

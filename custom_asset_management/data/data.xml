@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<!-- Sequences for asset.management -->
+		<record id="seq_account_asset_asset" model="ir.sequence">
+			<field name="name">Asset Code</field>
+			<field name="code">asset.management.sequence</field>
+			<field name="prefix">000</field>
+			<field name="padding">1</field>
+			<field name="company_id" eval="False"/>
+		</record>
+
+		<!-- Sequences for order.order -->
+		<record id="seq_order_order" model="ir.sequence">
+			<field name="name">Order Name</field>
+			<field name="code">order.order.sequence</field>
+			<field name="prefix">000</field>
+			<field name="padding">1</field>
+			<field name="company_id" eval="False"/>
+		</record>
+
+	   <record id="ir_cron_scheduler_update_rfid_action" model="ir.cron">
+		   <field name="name">Update Rfid Code</field>
+		   <field name="model_id" ref="model_asset_management"/>
+		   <field name="state">code</field>
+		   <field name="code">model.action_update_rfid_code()</field>
+		   <field name="user_id" ref="base.user_root"/>
+		   <field name="interval_number">12</field>
+		   <field name="interval_type">months</field>
+		   <field name="numbercall">-1</field>
+	   </record>
+		
+      <record id="paperformat_asset_order_report" model="report.paperformat">
+			<field name="name">Asset Order</field>
+			<field name="default" eval="True"/>
+			<field name="format">custom</field>
+			<field name="page_height">297</field>
+			<field name="page_width">210</field>
+			<field name="orientation">Portrait</field>
+			<field name="margin_top">28</field>
+			<field name="margin_bottom">20</field>
+			<field name="margin_left">5</field>
+			<field name="margin_right">3</field>
+			<field name="header_line" eval="False"/>
+			<field name="header_spacing">28</field>
+			<field name="dpi">90</field>
+      </record>
+
+	</data>
+</odoo>

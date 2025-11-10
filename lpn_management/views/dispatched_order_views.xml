@@ -1,0 +1,115 @@
+<odoo>
+    <!-- Action -->
+    <record id="action_dispatched_order" model="ir.actions.act_window">
+        <field name="name">Dispatched Orders</field>
+        <field name="res_model">dispatched.order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu
+    <menuitem id="menu_dispatched_order" name="Dispatched Orders"
+              parent="menu_lpn_root" action="action_dispatched_order" sequence="2"/> -->
+
+    <!-- Tree View -->
+    <record id="view_dispatched_order_tree" model="ir.ui.view">
+        <field name="name">dispatched.order.tree</field>
+        <field name="model">dispatched.order</field>
+        <field name="arch" type="xml">
+            <tree>
+               <field name="name"/>
+               <field name="dispatch_date" optional="show"/>
+               <field name="from_plant_id" optional="show"/>
+               <field name="to_plant_id" optional="show"/>
+               <field name="create_uid" optional="show"/>
+               <field name="checked_uid" optional="show"/>
+               <field name="checked_datetime" optional="show"/>
+               <field name="state" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_dispatched_order_form" model="ir.ui.view">
+        <field name="name">dispatched.order.form</field>
+        <field name="model">dispatched.order</field>
+        <field name="arch" type="xml">
+            <form>
+               <header>
+                  <field name="state" widget="statusbar" statusbar_visible="order_created,dispatched"/>
+               </header>
+               <sheet>
+                  <div class="oe_title">
+                     <label for="name" class="oe_edit_only"/>
+                     <h1>
+                         <field name="name"/>
+                     </h1>
+                  </div>
+                   <group col="3">
+                      <group>
+                         <field name="dispatch_date"/>
+                         <field name="dispatch_desc"/>
+                      </group>
+                      <group>
+                         <field name="from_plant_id" readonly="1" options="{'no_open': True}"/>
+                         <field name="to_plant_id"/>
+                      </group>
+                      <group>
+                         <field name="create_uid" readonly="1" options="{'no_open': True}"/>
+                         <field name="checked_uid" readonly="1" options="{'no_open': True}"/>
+                         <field name="checked_datetime" readonly="1"/>
+                       </group>
+                  </group>
+                  <notebook>
+                     <page string="Master LPN List" style="font-weight:bold; font-size:14px;" name="master_lpn_page" translate="no">
+                         <field name="lpn_line_ids">
+                             <tree editable="bottom">
+                                <field name="lpn_id"/>
+                                <field name="rfid_code"/>
+                                <field name="product_category_id"/>
+                                <field name="plant_location_id"/>
+                                <field name="generation_date"/>
+                                <field name="dispatched"/>
+                                <field name="remark"/>
+                             </tree>
+                             <form>
+                                 <group>
+                                    <group>
+                                        <field name="lpn_id"/>
+                                        <field name="name"/>
+                                        <field name="rfid_code"/>
+                                    </group>
+                                    <group>
+                                        <field name="product_category_id"/>
+                                        <field name="plant_location_id"/>
+                                        <field name="generation_date"/>
+                                    </group>
+                                </group>
+                             </form>
+                         </field>
+                     </page>
+                  </notebook>
+               </sheet>
+               <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" options="{'no_open': True}"/>
+                    <field name="message_ids" options="{'no_open': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_dispatched_order_search" model="ir.ui.view">
+        <field name="name">dispatched.order.search</field>
+        <field name="model">dispatched.order</field>
+        <field name="arch" type="xml">
+            <search>
+               <field name="name"/>
+               <field name="from_plant_id"/>
+               <field name="to_plant_id"/>
+               <field name="create_uid"/>
+               <field name="checked_uid"/>
+               <filter string="Today" name="today" domain="[('dispatch_date','=',context_today())]"/>
+            </search>
+        </field>
+    </record>
+</odoo>

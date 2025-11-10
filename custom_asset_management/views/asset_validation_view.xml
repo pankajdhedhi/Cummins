@@ -1,0 +1,28 @@
+<odoo>
+	<!-- Asset Validation tree view -->
+	<record id="asset_validtion_tree" model="ir.ui.view">
+		<field name="name">order.order.tree</field>
+		<field name="model">order.order</field>
+		<field name="arch" type="xml">
+			<tree string="Asset Validation">
+				<field name="name"/>
+				<field name="state"/>
+				<field name="order_datetime"/>
+			</tree>
+		</field>
+	</record>
+
+	<!-- Asset Validation action -->
+	<record model="ir.actions.act_window" id="action_asset_validtion">
+		<field name="name">Asset Validation</field>
+		<field name="res_model">order.order</field>
+		<field name="view_mode">tree,form</field>
+		<field name="view_id" ref="asset_validtion_tree"/>
+		<field name="domain">[('state', '=', 'order_created')]</field>
+	</record>
+
+	<!-- Asset Validation menuitem
+	<menuitem id="menu_asset_validtion" name="Asset Validation"
+			  parent="custom_asset_management.menu_action_account_asset_asset_configs"
+			  action="action_asset_validtion"/>-->
+</odoo>
