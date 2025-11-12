@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-import datetime
+# import datetime
+from datetime import datetime
+
 from odoo import http
 from odoo.http import request
 import xmlrpc.client
@@ -399,33 +401,23 @@ class LPNManagementAPI(http.Controller):
 
     @http.route('/lpn/api/audit/scan-master', type='json', auth='public', methods=['POST'])
     def audit_scan_master_lpn(self, **kwargs):
-        """
-        Scan Master LPN barcode for audit
-        
-        POST /lpn/api/audit/scan-master
-        {
-            "username": "admin",
-            "password": "admin123",
-            "user_id": 1,
-            "session_token": "token_here",
-            "rfid_code": "RFID001"
-        }
-        """
         try:
-            data = json.loads(request.httprequest.data)
+            data = json.loads(request.httprequest.data)  # ✅ Correct way to get parsed JSON
             username = data.get('username')
             password = data.get('password')
-
             session_token = data.get('session_token')
             rfid_code = data.get('rfid_code')
 
+            if isinstance(rfid_code, dict):  # ✅ Handle malformed input
+                rfid_code = rfid_code.get('rfid_code')
+
+            if not rfid_code:
+                return {'success': False, 'message': 'RFID code is required'}
+
             # Authenticate
-            try:
-                uid = common.authenticate(db, username, password, {})
-                if not uid:
-                    return {'success': False, 'message': 'Invalid credentials'}
-            except:
-                return {'success': False, 'message': 'Authentication failed'}
+            uid = common.authenticate(db, username, password, {})
+            if not uid:
+                return {'success': False, 'message': 'Invalid credentials'}
 
             # Validate session
             message = models.execute_kw(
@@ -435,104 +427,89 @@ class LPNManagementAPI(http.Controller):
             if message and message[0] != 'Okay':
                 return {'success': False, 'message': str(message[0])}
 
-            if not rfid_code:
-                return {
-                    'success': False,
-                    'message': 'RFID code is required'
-                }
-
-            # Search by RFID code
+            # Search Master LPN by RFID
+            _logger.info(f"🔍 Searching Master LPN with RFID: {rfid_code}")
             master_lpn_ids = models.execute_kw(
                 db, uid, password, 'lpn.master', 'search',
-                [('rfid_code', '=', rfid_code)], {'limit': 1}
+                [[('rfid_code', '=', rfid_code)]],  # ✅ Correctly structured domain
+                {'limit': 1}
             )
+            logging.info(f"Master LPN IDs found: {master_lpn_ids}")
 
             if not master_lpn_ids:
-                return {
-                    'success': False,
-                    'message': 'Master LPN not found'
-                }
+                return {'success': False, 'message': 'Master LPN not found'}
 
-            # Get master LPN data
             master_lpn_data = models.execute_kw(
-                db, uid, password, 'lpn.master', 'read',
-                master_lpn_ids, ['name', 'rfid_code', 'child_lpn_ids']
-            )
+            db, uid, password, 'lpn.master', 'read',
+            [master_lpn_ids],
+            {'fields': ['name', 'rfid_code', 'child_lpn_ids', 'physical_audit']}  # ✅ Always use dict for 'read'
+        )
+            logging.info(f"Master LPN Data: {master_lpn_data}")
             master_lpn = master_lpn_data[0]
 
-            # Get child LPNs/TSNs
+            # Fetch child LPNs
             tsn_list = []
+
             if master_lpn.get('child_lpn_ids'):
                 child_lpns_data = models.execute_kw(
                     db, uid, password, 'lpn.child', 'read',
-                    [master_lpn['child_lpn_ids']], ['id', 'tsn', 'turbo_item', 'turbo_type']
+                    [master_lpn['child_lpn_ids']],
+                    {'fields': ['id', 'tsn', 'turbo_item', 'turbo_type']}  # ✅ FIXED
                 )
+                logging.info(f"Child LPNs Data: {child_lpns_data}")
+                tsn_list = [{
+                    'id': c['id'],
+                    'tsn': c.get('tsn'),
+                    'turbo_item': c.get('turbo_item'),
+                    'turbo_type': c.get('turbo_type'),
+                    'is_scanned': False
+                } for c in child_lpns_data]
 
-                for child_lpn in child_lpns_data:
-                    tsn_list.append({
-                        'id': child_lpn['id'],
-                        'tsn': child_lpn.get('tsn'),
-                        'turbo_item': child_lpn.get('turbo_item'),
-                        'turbo_type': child_lpn.get('turbo_type'),
-                        'is_scanned': False
-                    })
+            logging.info(f"TSN List: {tsn_list}")
 
             # Create audit log
-            audit_log_id = models.execute_kw(
-                db, uid, password, 'lpn.audit.log', 'create', [{
-                    'master_lpn_id': master_lpn['id'],
-                    'total_tsn': len(tsn_list),
-                    'scanned_tsn': 0,
-                    'audit_status': 'in_progress',
-                }]
-            )
+            # audit_log_id = models.execute_kw(
+            #     db, uid, password, 'lpn.audit.log', 'create', [{
+            #         'master_lpn_id': master_lpn['id'],
+            #         'total_tsn': len(tsn_list),
+            #         'scanned_tsn': 0,
+            #         'audit_status': 'in_progress',
+            #     }]
+            # )
+            # logging.info(f"Audit Log ID: {audit_log_id}")
 
             return {
                 'success': True,
                 'comments': 'Master LPN found',
                 'data': {
-                    'audit_id': audit_log_id,
+                    # 'audit_id': audit_log_id,
                     'master_id': master_lpn['id'],
                     'master_name': master_lpn['name'],
                     'rfid_code': master_lpn['rfid_code'],
                     'tsn_list': tsn_list,
-                    'total_tsn': len(tsn_list)
+                    'total_tsn': len(tsn_list),
+                    'physical_audit': master_lpn['physical_audit']
                 }
             }
+
         except Exception as e:
             _logger.error(f"Audit scan master error: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }
+            return {'success': False, 'message': f'Error: {str(e)}'}
 
     @http.route('/lpn/api/audit/scan-tsn', type='json', auth='public', methods=['POST'])
     def audit_scan_tsn(self, **kwargs):
         """
         Scan TSN barcode on turbo
-        
-        POST /lpn/api/audit/scan-tsn
-        {
-            "username": "admin",
-            "password": "admin123",
-            "user_id": 1,
-            "session_token": "token_here",
-            "audit_id": 1,
-            "master_id": 1,
-            "tsn_barcode": "TSN001"
-        }
         """
         try:
             data = json.loads(request.httprequest.data)
             username = data.get('username')
             password = data.get('password')
-
             session_token = data.get('session_token')
-            audit_id = data.get('audit_id')
             master_id = data.get('master_id')
             tsn_barcode = data.get('tsn_barcode')
 
-            # Authenticate
+            # Authenticate User
             try:
                 uid = common.authenticate(db, username, password, {})
                 if not uid:
@@ -540,65 +517,48 @@ class LPNManagementAPI(http.Controller):
             except:
                 return {'success': False, 'message': 'Authentication failed'}
 
-            # Validate session
+            # Validate Session Token
             message = models.execute_kw(
-                db, uid, password, 'res.users', 'validate_session_tinmac_messsage',
+                db, uid, password,
+                'res.users', 'validate_session_tinmac_messsage',
                 [[uid], session_token]
             )
+
             if message and message[0] != 'Okay':
                 return {'success': False, 'message': str(message[0])}
 
             if not master_id or not tsn_barcode:
-                return {
-                    'success': False,
-                    'message': 'Master ID and TSN barcode are required'
-                }
+                return {'success': False, 'message': 'Master ID and TSN barcode are required'}
 
-            # Get master LPN
+            # Fetch Master LPN
             master_lpn_data = models.execute_kw(
                 db, uid, password, 'lpn.master', 'read',
-                [master_id], ['name', 'rfid_code', 'child_lpn_ids']
+                [[master_id]],  # must be list of IDs
+                {'fields': ['name', 'rfid_code', 'child_lpn_ids']}
             )
 
             if not master_lpn_data:
-                return {
-                    'success': False,
-                    'message': 'Master LPN not found'
-                }
+                return {'success': False, 'message': 'Master LPN not found'}
 
             master_lpn = master_lpn_data[0]
 
-            # Find TSN in child LPNs
-            found_tsn = None
-            if master_lpn.get('child_lpn_ids'):
-                child_lpns_data = models.execute_kw(
-                    db, uid, password, 'lpn.child', 'read',
-                    [master_lpn['child_lpn_ids']], ['id', 'tsn', 'turbo_item', 'turbo_type']
-                )
-
-                for child_lpn in child_lpns_data:
-                    if child_lpn.get('tsn') == tsn_barcode:
-                        found_tsn = child_lpn
-                        break
-
-            if not found_tsn:
-                return {
-                    'success': False,
-                    'message': 'TSN not found in this Master LPN'
-                }
-
-            # Build updated TSN list
+            # Fetch Child LPNs
             tsn_list = []
             scanned_count = 0
+            found_tsn = None
 
             if master_lpn.get('child_lpn_ids'):
                 child_lpns_data = models.execute_kw(
                     db, uid, password, 'lpn.child', 'read',
-                    [master_lpn['child_lpn_ids']], ['id', 'tsn', 'turbo_item', 'turbo_type']
+                    [master_lpn['child_lpn_ids']],
+                    {'fields': ['id', 'tsn', 'turbo_item', 'turbo_type']}
                 )
 
                 for child_lpn in child_lpns_data:
-                    is_this_scanned = child_lpn.get('tsn') == tsn_barcode
+                    is_this_scanned = (child_lpn.get('tsn') == tsn_barcode)
+                    if is_this_scanned:
+                        found_tsn = child_lpn
+
                     tsn_list.append({
                         'id': child_lpn['id'],
                         'tsn': child_lpn.get('tsn'),
@@ -606,19 +566,14 @@ class LPNManagementAPI(http.Controller):
                         'turbo_type': child_lpn.get('turbo_type'),
                         'is_scanned': is_this_scanned
                     })
+
                     if is_this_scanned:
                         scanned_count += 1
 
-            all_scanned = scanned_count == len(tsn_list)
+            if not found_tsn:
+                return {'success': False, 'message': 'TSN not found in this Master LPN'}
 
-            # Update audit log
-            if audit_id:
-                models.execute_kw(
-                    db, uid, password, 'lpn.audit.log', 'write',
-                    [audit_id], {
-                        'scanned_tsn': scanned_count
-                    }
-                )
+            all_scanned = (scanned_count == len(tsn_list))
 
             return {
                 'success': True,
@@ -632,35 +587,18 @@ class LPNManagementAPI(http.Controller):
                     'all_scanned': all_scanned
                 }
             }
+
         except Exception as e:
             _logger.error(f"Audit scan TSN error: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }
+            return {'success': False, 'message': f'Error: {str(e)}'}
 
     @http.route('/lpn/api/audit/complete', type='json', auth='public', methods=['POST'])
     def audit_complete(self, **kwargs):
-        """
-        Mark physical audit as complete
-        
-        POST /lpn/api/audit/complete
-        {
-            "username": "admin",
-            "password": "admin123",
-            "user_id": 1,
-            "session_token": "token_here",
-            "audit_id": 1,
-            "master_id": 1
-        }
-        """
         try:
             data = json.loads(request.httprequest.data)
             username = data.get('username')
             password = data.get('password')
-            user_id = data.get('user_id')
             session_token = data.get('session_token')
-            audit_id = data.get('audit_id')
             master_id = data.get('master_id')
 
             # Authenticate
@@ -679,35 +617,26 @@ class LPNManagementAPI(http.Controller):
             if message and message[0] != 'Okay':
                 return {'success': False, 'message': str(message[0])}
 
-            # Get master LPN
+            if not master_id:
+                return {'success': False, 'message': 'Master ID required'}
+
+            # ✅ Correct read() usage
             master_lpn_data = models.execute_kw(
                 db, uid, password, 'lpn.master', 'read',
-                [master_id], ['name', 'child_lpn_ids']
+                [[master_id]],
+                {'fields': ['name', 'child_lpn_ids']}
             )
 
             if not master_lpn_data:
-                return {
-                    'success': False,
-                    'message': 'Master LPN not found'
-                }
+                return {'success': False, 'message': 'Master LPN not found'}
 
             master_lpn = master_lpn_data[0]
 
-            # Update master LPN
+            # ✅ Correct write() usage
             models.execute_kw(
                 db, uid, password, 'lpn.master', 'write',
-                [master_id], {'physical_audit': True}
+                [[master_id], {'physical_audit': True}]
             )
-
-            # Update audit log
-            if audit_id:
-                models.execute_kw(
-                    db, uid, password, 'lpn.audit.log', 'write',
-                    [audit_id], {
-                        'audit_status': 'completed',
-                        'scanned_tsn': len(master_lpn.get('child_lpn_ids', []))
-                    }
-                )
 
             return {
                 'success': True,
@@ -719,12 +648,10 @@ class LPNManagementAPI(http.Controller):
                     'audit_date': datetime.now().isoformat()
                 }
             }
+
         except Exception as e:
             _logger.error(f"Audit complete error: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }
+            return {'success': False, 'message': f'Error: {str(e)}'}
 
     # ==================== CYCLE COUNT ====================
 
@@ -797,74 +724,65 @@ class LPNManagementAPI(http.Controller):
 
     @http.route('/lpn/api/cycle-count/scan', type='json', auth='public', methods=['POST'])
     def cycle_count_scan(self, **kwargs):
-        """
-        Scan Master LPN during cycle count
-        
-        POST /lpn/api/cycle-count/scan
-        {
-            "username": "admin",
-            "password": "admin123",
-            "user_id": 1,
-            "session_token": "token_here",
-            "session_id": 1,
-            "rfid_code": "RFID001"
-        }
-        """
         try:
             data = json.loads(request.httprequest.data)
             username = data.get('username')
             password = data.get('password')
-            user_id = data.get('user_id')
             session_token = data.get('session_token')
-            session_id = data.get('session_id')
             rfid_code = data.get('rfid_code')
 
-            # Authenticate
-            try:
-                uid = common.authenticate(db, username, password, {})
-                if not uid:
-                    return {'success': False, 'message': 'Invalid credentials'}
-            except:
-                return {'success': False, 'message': 'Authentication failed'}
+            if isinstance(rfid_code, dict):
+                rfid_code = rfid_code.get('rfid_code')
 
-            # Validate session
+            if not rfid_code:
+                return {'success': False, 'message': 'RFID code is required'}
+
+            uid = common.authenticate(db, username, password, {})
+            if not uid:
+                return {'success': False, 'message': 'Invalid credentials'}
+
             message = models.execute_kw(
-                db, uid, password, 'res.users', 'validate_session_tinmac_messsage',
+                db, uid, password,
+                'res.users', 'validate_session_tinmac_messsage',
                 [[uid], session_token]
             )
             if message and message[0] != 'Okay':
                 return {'success': False, 'message': str(message[0])}
+            print("Authenticated UID:", uid)
+            logging.info(f"Authenticated UID: {uid}")
+            logging.info(f"RFID Code to scan: {rfid_code}")
+            # print(f"🔍 Searching Master LPN with RFID: {rfid_code}")
 
-            if not session_id or not rfid_code:
-                return {
-                    'success': False,
-                    'message': 'Session ID and RFID code are required'
-                }
-
-            # Find Master LPN by RFID
+            # ✅ Correct search
+            
             master_lpn_ids = models.execute_kw(
                 db, uid, password, 'lpn.master', 'search',
-                [('rfid_code', '=', rfid_code)], {'limit': 1}
+                [[('rfid_code', '=', rfid_code)]],  # ✅ Correctly structured domain
+                {'limit': 1}
             )
+            logging.info(f"Master LPN IDs found: {master_lpn_ids}")
 
             if not master_lpn_ids:
-                return {
-                    'success': False,
-                    'message': 'Master LPN not found'
-                }
+                return {'success': False, 'message': 'Master LPN not found'}
 
-            # Get master LPN data
+            # master_lpn_data = models.execute_kw(
+            #     db, uid, password,
+            #     'lpn.master', 'read',
+            #     master_lpn_ids,
+            #     ['name', 'rfid_code', 'child_lpn_ids']
+            # )
             master_lpn_data = models.execute_kw(
-                db, uid, password, 'lpn.master', 'read',
-                master_lpn_ids, ['name', 'rfid_code', 'child_lpn_ids']
-            )
+            db, uid, password, 'lpn.master', 'read',
+            [master_lpn_ids],
+            {'fields': ['id','name', 'rfid_code', 'child_lpn_ids', 'physical_audit']}  # ✅ Always use dict for 'read'
+        )
+            logging.info(f"Master LPN Data: {master_lpn_data}")
             master_lpn = master_lpn_data[0]
 
             return {
                 'success': True,
-                'comments': 'Master LPN scanned',
+                'comments': 'Master LPN scanned successfully',
                 'data': {
-                    'session_id': session_id,
                     'master_id': master_lpn['id'],
                     'master_name': master_lpn['name'],
                     'rfid_code': master_lpn['rfid_code'],
@@ -872,93 +790,58 @@ class LPNManagementAPI(http.Controller):
                     'scan_time': datetime.now().isoformat()
                 }
             }
+
         except Exception as e:
-            _logger.error(f"Cycle count scan error: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }
+            _logger.error("Cycle count scan error: %s", str(e))
+            return {'success': False, 'message': f'Error: {str(e)}'}
 
     @http.route('/lpn/api/cycle-count/submit', type='json', auth='public', methods=['POST'])
     def cycle_count_submit(self, **kwargs):
-        """
-        Submit cycle count data
-        
-        POST /lpn/api/cycle-count/submit
-        {
-            "username": "admin",
-            "password": "admin123",
-            "user_id": 1,
-            "session_token": "token_here",
-            "session_id": 1,
-            "scanned_master_lpns": [
-                {
-                    "master_id": 1,
-                    "master_name": "LPN001",
-                    "rfid_code": "RFID001"
-                }
-            ]
-        }
-        """
         try:
             data = json.loads(request.httprequest.data)
             username = data.get('username')
             password = data.get('password')
-            user_id = data.get('user_id')
             session_token = data.get('session_token')
-            session_id = data.get('session_id')
             scanned_master_lpns = data.get('scanned_master_lpns', [])
 
-            # Authenticate
-            try:
-                uid = common.authenticate(db, username, password, {})
-                if not uid:
-                    return {'success': False, 'message': 'Invalid credentials'}
-            except:
-                return {'success': False, 'message': 'Authentication failed'}
+            # Authenticate user
+            uid = common.authenticate(db, username, password, {})
+            if not uid:
+                return {'success': False, 'message': 'Invalid credentials'}
 
             # Validate session
             message = models.execute_kw(
-                db, uid, password, 'res.users', 'validate_session_tinmac_messsage',
+                db, uid, password,
+                'res.users', 'validate_session_tinmac_messsage',
                 [[uid], session_token]
             )
             if message and message[0] != 'Okay':
                 return {'success': False, 'message': str(message[0])}
 
-            if not session_id:
-                return {
-                    'success': False,
-                    'message': 'Session ID is required'
-                }
-
-            # Get cycle count session
-            cycle_count_data = models.execute_kw(
-                db, uid, password, 'lpn.cycle.count', 'read',
-                [session_id], ['name', 'generation_date']
-            )
-
-            if not cycle_count_data:
-                return {
-                    'success': False,
-                    'message': 'Cycle count session not found'
-                }
+            # ✅ Create records directly from scanned list
+            for item in scanned_master_lpns:
+                models.execute_kw(
+                    db, uid, password,
+                    'lpn.cycle.count', 'create',
+                    [{
+                        'name': item.get('master_name'),
+                        'rfid_code': item.get('rfid_code'),
+                    }]
+                )
 
             return {
                 'success': True,
-                'comments': 'Cycle count data submitted',
+                'comments': 'Cycle count saved successfully',
                 'data': {
-                    'session_id': session_id,
-                    'total_lpn_scanned': len(scanned_master_lpns),
-                    'submission_time': datetime.now().isoformat(),
-                    'status': 'Submitted'
+                    'total_saved': len(scanned_master_lpns),
+                    'submission_time': datetime.now().isoformat()
                 }
             }
+
         except Exception as e:
-            _logger.error(f"Cycle count submit error: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error: {str(e)}'
-            }
+            _logger.error("Cycle count submit error: %s", str(e))
+            return {'success': False, 'message': f'Error: {str(e)}'}
+
 
     # ==================== SEARCH & STATS ====================
 

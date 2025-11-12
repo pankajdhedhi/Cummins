@@ -67,6 +67,7 @@ class res_users(models.Model):
         # elif self.has_group('lpn_management.group_technician'):
         #     group = "Technicians"
         # return {'session' : session, 'group' : group}
+        # return {'session_token' : session, 'plant_id': self.plant_id.id if self.plant_id else False}
         return {'session_token' : session}
         
 
