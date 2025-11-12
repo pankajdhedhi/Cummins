@@ -1,0 +1,66 @@
+<odoo>
+    
+    <!-- Tree View -->
+    <record id="view_lpn_cycle_count_tree" model="ir.ui.view">
+        <field name="name">lpn.cycle.count.tree</field>
+        <field name="model">lpn.cycle.count</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="rfid_code" optional="show"/>
+                <field name="generation_date" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_lpn_cycle_count_form" model="ir.ui.view">
+        <field name="name">lpn.cycle.count.form</field>
+        <field name="model">lpn.cycle.count</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+						<label for="name" class="oe_edit_only"/>
+						<h1>
+							<field name="name" placeholder="e.g. X10 engine"/>
+						</h1>
+					</div>
+                    <group>
+                        <group>
+                            <field name="generation_date"/>
+                            <field name="rfid_code"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user" options="{'no_open': True}"/>
+                    <field name="message_ids" options="{'no_open': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_lpn_cycle_count_search" model="ir.ui.view">
+        <field name="name">lpn.cycle.count.search</field>
+        <field name="model">lpn.cycle.count</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="rfid_code"/>
+                <filter string="Today" name="today" domain="[('generation_date','=',context_today())]"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Inward LPN Menu -->
+    <record id="action_lpn_cycle_count" model="ir.actions.act_window">
+        <field name="name">Cycle Count</field>
+        <field name="res_model">lpn.cycle.count</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+   
+   <menuitem id="menu_lpn_cycle_count" name="LPN Cycle Count" sequence="3"
+             parent="lpn_management.menu_lpn_root" action="action_lpn_cycle_count"/>
+</odoo>

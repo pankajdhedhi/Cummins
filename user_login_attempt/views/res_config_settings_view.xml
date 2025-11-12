@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="res_config_settings_view_form" model="ir.ui.view">
+		<field name="name">res.config.settings.form</field>
+		<field name="model">res.config.settings</field>
+		<field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+		<field name="arch" type="xml">
+			<xpath expr="//div[@id='user_default_rights']" position="after">
+				<div id="user_login_attempt">
+					<h2>Login Attempt</h2>
+					<div class="row mt16 o_settings_container" name="user_login_attempt">
+						<div class="col-12 col-lg-6 o_setting_box">
+							<div class="o_setting_left_pane">
+							</div>
+							<div class="o_setting_right_pane">
+								<label string="Login Attempt Configuration" for="login_failed_block_duration"/>
+								<div class="text-muted">
+									here set the login attempt configuration.
+								</div>
+								<div>
+									<label for="login_failed_attempt" />
+									<field name="login_failed_attempt" class="ml8" style="width:25%;" />
+								</div>
+								<div class="mt8">
+									<label for="login_failed_block_duration" />
+									<field name="login_failed_block_duration" class="ml8"
+										style="width:25%;" />
+									seconds
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</xpath>
+		</field>
+	</record>
+
+</odoo>

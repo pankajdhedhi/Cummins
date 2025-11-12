@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--    处理 title 及 theme-color-->
+    <template id="app_layout" inherit_id="web.layout" name="app Web layout">
+        <xpath expr="//title" position="replace">
+            <title t-esc="title or 'TiMAD'"/>
+        </xpath>
+    </template>
+    <!--    end-->
+    <template id="replace_login" name="Login Layout" inherit_id="web.login_layout">
+        <xpath expr="//t[@t-call='web.frontend_layout']" position="replace">
+            <t t-call="web.frontend_layout">
+            <t t-set="html_data" t-value="{'style': 'height: 100%;'}"/>
+            <t t-set="body_classname" t-value="'bg-100'"/>
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+
+            <div class="container py-5">
+                <div t-attf-class="card border-0 mx-auto bg-100 {{login_card_classes}} o_database_list" style="max-width: 300px;">
+                    <div class="card-body">
+                        <div t-attf-class="text-center pb-3 border-bottom {{'mb-3' if form_small else 'mb-4'}}">
+                            <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo" style="max-height:120px; max-width: 100%; width:auto"/>
+                        </div>
+                        <t t-out="0"/>
+                        <div class="text-center small mt-4 pt-3 border-top" t-if="not disable_footer">
+                            <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>TiMAD</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+        </xpath>
+        <xpath expr="//a[@target='_blank']" position="replace">
+            <a href="https://www.timadit.com" target="_blank">Powered by
+                <span>TiMAD</span>
+            </a>
+        </xpath>
+    </template>
+    <template id="replace_copyright_name" name="Copyright Name" inherit_id="web.frontend_layout">
+        <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
+            <span class="o_footer_copyright_name me-2">Copyright &amp;copy;
+	            <span class="copyright_name_before" contenteditable="true">2009-2024 </span>
+                <span t-field="res_company.name" itemprop="name"/>
+	            <span class="copyright_name_after" contenteditable="true"></span>
+            </span>
+        </xpath>
+    </template>
+</odoo>
